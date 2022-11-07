@@ -28,12 +28,18 @@ def matrix_multiplication(a: np.ndarray, b: np.ndarray) -> np.ndarray:
     m_b, p = b.shape
 
     # TODO: test if shape of matrices is compatible and raise error if not
+    if m_a != m_b:
+        raise ValueError('Shapes of input matrices ({shape_a},{shape_b}) are not compatible.'\
+                         .format(shape_a=a.shape, shape_b=b.shape))
 
     # Initialize result matrix with zeros
     c = np.zeros((n, p))
 
     # TODO: Compute matrix product without the usage of numpy.dot()
-
+    for j in range(p):
+        for i in range(n):
+            for k in range(m_a):
+                c[i,j] += a[i,k]*b[k,j]
 
     return c
 
@@ -59,13 +65,12 @@ def compare_multiplication(nmax: int, n: int) -> dict:
 
     x, y_mat_mult, y_numpy, r_mat_mult, r_numpy = [], [], [], [], []
     tr_dict = dict(timing_numpy=y_numpy, timing_mat_mult=y_mat_mult, results_numpy=r_numpy, results_mat_mult=r_mat_mult)
-    # TODO: Can be removed if matrices a and b are created in loop
-    a = np.ones((2, 2))
-    b = np.ones((2, 2))
 
     for m in range(2, nmax, n):
 
         # TODO: Create random mxm matrices a and b
+        a = np.random.randn(m, m)
+        b = np.random.randn(m, m)
 
         # Execute functions and measure the execution time
         time_mat_mult, result_mat_mult = timedcall(matrix_multiplication, a, b)
