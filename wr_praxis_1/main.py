@@ -132,7 +132,7 @@ def machine_epsilon(fp_format: np.dtype) -> np.number:
 
 def close(A: np.ndarray, B: np.ndarray, eps: np.number=1e-08) -> bool:
     """
-    Compare two floating point matrices. 
+    Compare two floating point matrices.
 
     Arguments:
     a : first matrix
@@ -179,25 +179,25 @@ def rotation_matrix(theta: float) -> np.ndarray:
     r = np.zeros((2, 2))
 
     # TODO: convert angle to radians
-
-
+    # convert desired rotation angle to radian
+    radian_angle = np.radians(np.float64(theta))
     # TODO: calculate diagonal terms of matrix
-
-
+    r[0,0] = r[1,1] = np.cos(radian_angle)
     # TODO: off-diagonal terms of matrix
-
+    r[0,1] = -np.sin(radian_angle)
+    r[1,0] = np.sin(radian_angle)
 
     return r
 
 
 def inverse_rotation(theta: float) -> np.ndarray:
     """
-    Compute inverse of the 2d rotation matrix that rotates a 
+    Compute inverse of the 2d rotation matrix that rotates a
     given vector by theta.
-    
+
     Arguments:
     theta: rotation angle
-    
+
     Return:
     Inverse of the rotation matrix
 
@@ -207,8 +207,11 @@ def inverse_rotation(theta: float) -> np.ndarray:
     # TODO: compute inverse rotation matrix
 
     m = np.zeros((2, 2))
-    
-
+    # create regular rotation matrix
+    m = rotation_matrix(theta)
+    # rotation matrix is always orthogonal
+    # => create inverse by transposing rotation matrix
+    m[0,1], m[1,0] = m[1,0], m[0,1]
     return m
 
 
