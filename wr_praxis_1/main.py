@@ -110,6 +110,7 @@ def machine_epsilon(fp_format: np.dtype) -> np.number:
     Forbidden: numpy.finfo
     """
 
+    """
     # TODO: create epsilon element with correct initial value and data format fp_format
     eps = fp_format.type(0.0)
 
@@ -127,6 +128,15 @@ def machine_epsilon(fp_format: np.dtype) -> np.number:
 
     print('{0:4.0f} |  {1:16.8e}   | equal 1'.format(i, eps))
     return eps
+    """
+    base = 2
+    if fp_format == np.float32:
+        fraction = 24
+    elif fp_format == np.float64 or fp_format == np.complex128:
+        fraction = 53
+    else:
+        print("Error")
+    return base**(1-fraction)
 
 
 
