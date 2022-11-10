@@ -129,13 +129,19 @@ def machine_epsilon(fp_format: np.dtype) -> np.number:
     print('{0:4.0f} |  {1:16.8e}   | equal 1'.format(i, eps))
     return eps
     """
+    # float32/64 use 23/52 bits for storing float fraction
+    # leading 1 bit is implicit
+    fraction_digits_float32 = 23+1
+    fraction_digits_float64 = 52+1
+    # binary base
     base = np.float64(2)
     if fp_format == np.float32:
-        fraction = np.float64(24)
+        fraction = np.float64(fraction_digits_float32)
+    # complex128 consists of two float64 for real and complex part
     elif fp_format == np.float64 or fp_format == np.complex128:
-        fraction = np.float64(53)
+        fraction = np.float64(fraction_digits_float64)
     else:
-        print("Error")
+        raise TypeError("Only float32, float64 and complex128 available for calculation of machine precision.")
     return base**(1-fraction)
 
 
