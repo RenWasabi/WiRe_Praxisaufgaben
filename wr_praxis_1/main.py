@@ -129,11 +129,11 @@ def machine_epsilon(fp_format: np.dtype) -> np.number:
     print('{0:4.0f} |  {1:16.8e}   | equal 1'.format(i, eps))
     return eps
     """
-    base = 2
+    base = np.float64(2)
     if fp_format == np.float32:
-        fraction = 24
+        fraction = np.float64(24)
     elif fp_format == np.float64 or fp_format == np.complex128:
-        fraction = 53
+        fraction = np.float64(53)
     else:
         print("Error")
     return base**(1-fraction)
