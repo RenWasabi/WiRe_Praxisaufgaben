@@ -152,9 +152,20 @@ def close(A: np.ndarray, B: np.ndarray, eps: np.number=1e-08) -> bool:
     """
     isclose = False
     # TODO: check if a and b are compareable
+    if A.shape != B.shape:
+        raise ValueError("Shapes of input matrices ({shape_a},{shape_b}) does not match."\
+                         .format(shape_a=A.shape, shape_b=B.shape))
 
     # TODO: check if all entries in a are close to the corresponding entry in b
-
+    # create a matrix which contains the distances between the entries of a and b as entries
+    # norm used for distance not further specified => euclidean distance
+    distance_matrix = np.abs(A-B)
+    # create matrix filled with tolerance eps
+    tolerance_matrix = np.ones(distance_matrix.shape)*eps
+    # true if all distances are smaller than tolerance eps
+    isclose_np = np.all(distance_matrix < tolerance_matrix)
+    # turn result from numpy boolean to expected python native boolean
+    isclose = True if isclose_np == True else False
     return isclose
 
 
