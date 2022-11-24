@@ -33,8 +33,42 @@ def gaussian_elimination(A: np.ndarray, b: np.ndarray, use_pivoting: bool = True
     b = b.copy()
 
     # TODO: Test if shape of matrix and vector is compatible and raise ValueError if not
+    n, m_a = A.shape
+    m_b, = b.shape # without , m_b would be tuple(m_b,)
+    if m_a != m_b:
+        raise ValueError('Shapes of matrix {matrix_shape} and vector {vector_shape} not compatible.'\
+                         .format(matrix_shape=A.shape, vector_shape=b.shape))
+    if n != m_a:
+        raise ValueError('Matrix is not square.')
 
     # TODO: Perform gaussian elimination
+    print(A)
+    print(b)
+
+    for k in range(n): # gauss elimination has n steps because A has n rows
+        # create matrix for elimination in step k
+        trans_matrix = np.eye((n))
+        # fill matrix with the factors for column k, rows k+1 to n-1
+        for i in range(k+1, n, 1):
+            trans_factor = -A[i,k] / A[k,k]
+            trans_matrix[i,k] = trans_factor
+        # transform a and b with the transformation matrix
+        A = trans_matrix @ A
+        b = trans_matrix @ b
+
+    print("Nach Transformation:")
+    print(A)
+    print(b)
+
+
+
+
+
+    print(trans_matrix)
+
+
+
+
 
     return A, b
 
