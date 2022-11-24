@@ -42,29 +42,40 @@ def gaussian_elimination(A: np.ndarray, b: np.ndarray, use_pivoting: bool = True
         raise ValueError('Matrix is not square.')
 
     # TODO: Perform gaussian elimination
-    print(A)
-    print(b)
+    #print(A)
+    #print(b)
 
     for k in range(n): # gauss elimination has n steps because A has n rows
         # create matrix for elimination in step k
         trans_matrix = np.eye((n))
         # fill matrix with the factors for column k, rows k+1 to n-1
         for i in range(k+1, n, 1):
+            # if A[k,k] is zero, pivoting is necessary
+            if np.isclose(A[k,k], 0):
+                if use_pivoting is False:
+                    raise ValueError("The linear system cannot be solved without pivoting.")
+                # find the (absolute) largest element in column k, row k+1 to n-1
+                # make a slice the column and the desired rows, use argmax
+                pivot_row_index = np.argmax(np.absolute(A[k:,k]))
+                # exchange row k and row in A and b
+                A[[k,pivot_row_index],:] = A[[pivot_row_index,k],:]
+                b[[k,pivot_row_index],] = b[[pivot_row_index,k],]
+            # end pivoting/no pivoting necessary
             trans_factor = -A[i,k] / A[k,k]
             trans_matrix[i,k] = trans_factor
         # transform a and b with the transformation matrix
         A = trans_matrix @ A
         b = trans_matrix @ b
 
-    print("Nach Transformation:")
-    print(A)
-    print(b)
+    #print("Nach Transformation:")
+    #print(A)
+    #print(b)
 
 
 
 
 
-    print(trans_matrix)
+    #print(trans_matrix)
 
 
 
