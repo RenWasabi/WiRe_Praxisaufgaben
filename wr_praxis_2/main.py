@@ -35,7 +35,7 @@ def gaussian_elimination(A: np.ndarray, b: np.ndarray, use_pivoting: bool = True
     # TODO: Test if shape of matrix and vector is compatible and raise ValueError if not
     n, m_a = A.shape
     m_b, = b.shape # without , m_b would be tuple(m_b,)
-    if m_a != m_b:
+    if n != m_b:
         raise ValueError('Shapes of matrix {matrix_shape} and vector {vector_shape} not compatible.'\
                          .format(matrix_shape=A.shape, vector_shape=b.shape))
     if n != m_a:
@@ -45,6 +45,9 @@ def gaussian_elimination(A: np.ndarray, b: np.ndarray, use_pivoting: bool = True
     #print(A)
     #print(b)
 
+    # for directly going to the next step of the outer loop in case pivoting is necessary
+    # but no non-zero element available
+    skip_step = False
     for k in range(n): # gauss elimination has n steps because A has n rows
         # create matrix for elimination in step k
         trans_matrix = np.eye((n))
@@ -57,9 +60,18 @@ def gaussian_elimination(A: np.ndarray, b: np.ndarray, use_pivoting: bool = True
                 # find the (absolute) largest element in column k, row k+1 to n-1
                 # make a slice the column and the desired rows, use argmax
                 pivot_row_index = np.argmax(np.absolute(A[k:,k]))
+                # special case: diagonal element zero and all elements below it as well
+                # => underdetermined system, go to next step k+1 in elimination
+                if np.isclose(A[pivot_row_index,k], 0):
+                    #print("Hint: The system is underdetermined.")
+                    skip_step = True # set flag for skipping rest of iteration of outer loop
+                    break
                 # exchange row k and row in A and b
                 A[[k,pivot_row_index],:] = A[[pivot_row_index,k],:]
                 b[[k,pivot_row_index],] = b[[pivot_row_index,k],]
+
+            if skip_step is True:
+                continue
             # end pivoting/no pivoting necessary
             trans_factor = -A[i,k] / A[k,k]
             trans_matrix[i,k] = trans_factor
@@ -70,16 +82,6 @@ def gaussian_elimination(A: np.ndarray, b: np.ndarray, use_pivoting: bool = True
     #print("Nach Transformation:")
     #print(A)
     #print(b)
-
-
-
-
-
-    #print(trans_matrix)
-
-
-
-
 
     return A, b
 
@@ -106,12 +108,40 @@ def back_substitution(A: np.ndarray, b: np.ndarray) -> np.ndarray:
     """
 
     # TODO: Test if shape of matrix and vector is compatible and raise ValueError if not
+    n, m = A.shape
+    p, = b.shape
+    print(A)
+    print(b)
+    if n != p:
+        raise ValueError('Shapes of matrix {matrix_shape} and vector {vector_shape} not compatible.'\
+                         .format(matrix_shape=A.shape, vector_shape=b.shape))
+
 
     # TODO: Initialize solution vector with proper size
-    x = np.zeros(1)
+    x = np.zeros(n)
 
     # TODO: Run backsubstitution and fill solution vector, raise ValueError if no/infinite solutions exist
-
+    # last i needs to be calculated manually because the sum loop would fail otherwise
+    if np.isclose(A[n-1, n-1],0):
+        if np.isclose(b[n-1],0):
+            raise ValueError('The matrix is underdetermined: infinite solutions possible.')
+        else:
+            raise ValueError('The matrix does not have a solution.')
+    x[n-1] = b[n-1]/A[n-1, n-1]
+    if n == 1:
+        return x
+    for i in range(n-2, -1, -1):
+        if np.isclose(A[i,i], 0):
+            if np.isclose(b[i],0):
+                raise ValueError('The matrix is underdetermined: infinite solutions possible.')
+            else:
+                raise ValueError('The matrix does not have a solution.')
+        # calculate the sum of the previous a_i,j x_i products
+        sum = 0
+        for j in range(i+1, n):
+            sum += A[i,j]*x[j]
+        x[i] = (b[i]-sum)/A[i,i]
+    print(x)
     return x
 
 
