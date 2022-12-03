@@ -110,12 +110,13 @@ def back_substitution(A: np.ndarray, b: np.ndarray) -> np.ndarray:
     # TODO: Test if shape of matrix and vector is compatible and raise ValueError if not
     n, m = A.shape
     p, = b.shape
+    A = A.astype(np.longdouble)
+    b = b.astype(np.longdouble)
     print(A)
     print(b)
     if n != p:
         raise ValueError('Shapes of matrix {matrix_shape} and vector {vector_shape} not compatible.'\
                          .format(matrix_shape=A.shape, vector_shape=b.shape))
-
 
     # TODO: Initialize solution vector with proper size
     x = np.zeros(n)
@@ -135,7 +136,7 @@ def back_substitution(A: np.ndarray, b: np.ndarray) -> np.ndarray:
             if np.isclose(b[i],0):
                 raise ValueError('The matrix is underdetermined: infinite solutions possible.')
             else:
-                raise ValueError('The matrix does not have a solution.')
+                raise ValueError('The matrix does not have a solution.i: {num}'.format(num=i))
         # calculate the sum of the previous a_i,j x_i products
         sum = 0
         for j in range(i+1, n):
