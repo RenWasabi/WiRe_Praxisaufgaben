@@ -111,9 +111,25 @@ def setup_data_matrix(images: list) -> np.ndarray:
     D: data matrix that contains the flattened images as rows
     """
     # TODO: initialize data matrix with proper size and data type
-    D = np.zeros((0, 0))
+
+    # get flattened dimension of images
+    dim_y, dim_x = images[0].shape
+    print(dim_x,dim_y)
+    img_flat_dim = dim_x*dim_y
+    # initialize data matrix
+    D = np.zeros((len(images), img_flat_dim))
+    print(D.shape)
 
     # TODO: add flattened images to data matrix
+
+    # add flattened images in each row of D
+    for img_index in range(len(images)):
+        D[img_index, :] = images[img_index].reshape(img_flat_dim)
+
+    # test
+    #mpl.pyplot.imshow(D[4,:].reshape(98,116), cmap='gray')  # plotte das Bild
+    #mpl.pyplot.show()
+
 
 
     return D
