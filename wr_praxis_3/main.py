@@ -29,9 +29,12 @@ def power_iteration(M: np.ndarray, epsilon: float = -1.0) -> (np.ndarray, list):
         raise ValueError("Matrix not nxn")
 
     # TODO: set epsilon to default value if not set by user
+    if epsilon == -1.0: # what if user sets epsilon to -1?
+        epsilon = np.finfo(float).eps*10 # 10 times machine precision
 
     # TODO: normalized random vector of proper size to initialize iteration
-    vector = np.zeros(1)
+    #vector = np.zeros(1)
+    vector = np.random.random(M.shape[0])
 
     # Initialize residual list and residual of current eigenvector estimate
     residuals = []
@@ -40,7 +43,12 @@ def power_iteration(M: np.ndarray, epsilon: float = -1.0) -> (np.ndarray, list):
     # Perform power iteration
     while residual > epsilon:
         # TODO: implement power iteration
-        pass
+        old_vector = np.copy(vector) # for calculating the residual
+        vector = np.dot(M, vector) # set v to Av
+        vector = vector / np.linalg.norm(vector) # normalize new v to length 1
+        residual = np.linalg.norm(vector - old_vector) # set residual to distance between old and new vector
+        residuals.append(residual)
+
 
     return vector, residuals
 
