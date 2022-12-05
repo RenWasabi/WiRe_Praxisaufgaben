@@ -70,15 +70,32 @@ def load_images(path: str, file_ending: str=".png") -> (list, int, int):
     dimension_y: size of images in y direction
     """
 
-    images = []
-
     # TODO read each image in path as numpy.ndarray and append to images
     # Useful functions: lib.list_directory(), matplotlib.image.imread(), numpy.asarray()
 
+    images = []
+
+    # os module not allowed, for testing
+    #print(os.listdir("./")) #works, but doesn't show data directory
+    #print(os.getcwd())
+    # for some reason working directory is wr_praxis_1, not three => specify in test file
+    # load list of image files and sort
+    img_file_list = lib.list_directory(path)
+    img_file_list = sorted(img_file_list) # x_00 to x_09 make up 1 image x
+
+    # convert the list of img files into a list containing each images as np array
+    for img_file in img_file_list:
+        # skip files that do not have the desired file type
+        if not img_file.endswith(file_ending):
+            continue
+        img_tmp = mpl.image.imread(path+"/"+img_file)
+        img_tmp = np.asarray(img_tmp, dtype=np.float64)
+        images.append(img_tmp)
 
     # TODO set dimensions according to first image in images
-    dimension_y = 0
-    dimension_x = 0
+    first_img = images[0]
+    # x: width, y: height
+    dimension_y,dimension_x = first_img.shape
 
     return images, dimension_x, dimension_y
 
