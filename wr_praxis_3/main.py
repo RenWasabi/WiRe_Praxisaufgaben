@@ -114,11 +114,9 @@ def setup_data_matrix(images: list) -> np.ndarray:
 
     # get flattened dimension of images
     dim_y, dim_x = images[0].shape
-    print(dim_x,dim_y)
     img_flat_dim = dim_x*dim_y
     # initialize data matrix
     D = np.zeros((len(images), img_flat_dim))
-    print(D.shape)
 
     # TODO: add flattened images to data matrix
 
@@ -147,13 +145,15 @@ def calculate_pca(D: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
     svals: singular values associated with principle components
     mean_data: mean that was subtracted from data
     """
-
     # TODO: subtract mean from data / center data at origin
-    mean_data = np.zeros((1, 1))
+    mean_data = D.mean(0)
+    # center data matrix by removing mean from each entry
+    for i in range(D.shape[0]):
+        D[i, :] = D[i,:]-mean_data
 
     # TODO: compute left and right singular vectors and singular values
     # Useful functions: numpy.linalg.svd(..., full_matrices=False)
-    svals, pcs = [np.ones((1, 1))] * 2
+    U, svals, pcs = np.linalg.svd(D, full_matrices=False)
 
     return pcs, svals, mean_data
 
