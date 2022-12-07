@@ -170,11 +170,15 @@ def accumulated_energy(singular_values: np.ndarray, threshold: float = 0.8) -> i
     Return:
     k: threshold index
     """
-
     # TODO: Normalize singular value magnitudes
-
+    # already sorted: svd returns singular values in descending order by default
+    singular_values = singular_values / singular_values.sum()
+    acc_percent = 0
     k = 0
     # TODO: Determine k that first k singular values make up threshold percent of magnitude
+    while acc_percent < threshold:
+        k += 1
+        acc_percent = singular_values[:k].sum()
 
     return k
 
