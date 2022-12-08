@@ -196,11 +196,13 @@ def project_faces(pcs: np.ndarray, images: list, mean_data: np.ndarray) -> np.nd
     coefficients: basis function coefficients for input images, each row contains coefficients of one image
     """
 
+    # again, create normalized data_matrix
+    data_matrix = setup_data_matrix(images)-mean_data # mean data will be broadcast to match data_matrix rows
     # TODO: initialize coefficients array with proper size
-    coefficients = np.zeros((1, 1))
+    coefficients = np.zeros((data_matrix.shape[0], pcs.T.shape[1]))
+    coefficients = np.matmul(data_matrix, pcs.T)
 
     # TODO: iterate over images and project each normalized image into principal component basis
-
 
     return coefficients
 
