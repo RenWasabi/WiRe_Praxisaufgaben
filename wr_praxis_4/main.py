@@ -27,6 +27,8 @@ def lagrange_interpolation(x: np.ndarray, y: np.ndarray) -> (np.poly1d, list):
 
     # TODO: Generate Lagrange base polynomials and interpolation polynomial
 
+    # IMPORTANT: When they're saying base_functions, what they actually want is the base polynomials,
+    # so they shouldn't be multiplied with the function value before adding to the list
     # calculate the lagrange base polynomials and functions
     for i in range(x.size): # loop for every base polynomial l_i(x)
         base_polynomial = np.poly1d([1]) # init with 1 bc we'll multiply, MISSING: what if input is single data point
@@ -34,17 +36,12 @@ def lagrange_interpolation(x: np.ndarray, y: np.ndarray) -> (np.poly1d, list):
             if i == j:
                 continue
             multiplicant = np.poly1d([ 1/(x[i]-x[j]), -1*x[j]/(x[i]-x[j]) ] )
-            #print("l",i,": ", multiplicant)
-            #base_polynomial = base_polynomial * multiplicant
             base_polynomial = np.polymul(base_polynomial, multiplicant)
-        #print("base polynomial l_",i," :\n", base_polynomial)
-        base_function = base_polynomial*y[i]
-        #print("base function l_", i, " :\n", base_function)
-        base_functions.append(base_function) # base function is base polynomial * function value
+        base_function = np.polymul(base_polynomial, y[i])
+        print("base function l_", i, " :\n", base_function)
+        base_functions.append(base_polynomial) # base function is base polynomial * function value
         polynomial = np.polyadd(polynomial, base_function)
-        #print("poly step ", i, ":\n", polynomial)
 
-    #print(base_functions)
 
     return polynomial, base_functions
 
