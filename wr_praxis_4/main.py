@@ -159,16 +159,49 @@ def periodic_cubic_interpolation(x: np.ndarray, y: np.ndarray) -> list:
     """
 
     assert (x.size == y.size)
-    # TODO: construct linear system with periodic boundary conditions
+    # TODO construct linear system with natural boundary conditions
+    A = np.zeros((4 * x.size - 4, 4 * x.size - 4))  # matrix holding the function
+    constraint = np.zeros(4 * x.size - 4)  # vector holding the values to be resolved against
 
+    # fill the matrix
+    # beginning boundary condition
+    # first boundary condition f'
+    A[0, 0:4] = [0,1,2*x[0],3*x[0]**2]
+    A[0, 4*(x.size-2):] = [0,-1,-2*x[-1],-3*x[-1]**2]
+    # second boundary condition f''
+    A[4*(x.size-1)-1,0:4] = [0,0,2,6*x[0]]
+    A[4*(x.size-1)-1,4*(x.size-2):] = [0,0,-2,-6*x[-1]]
+
+    print(A)
+
+    # constraints first and last entries are already 0
+
+    # regular values
+    for i in range(x.size - 2):
+        A[4 * i + 1, 4 * i:4 * i + 4] = [1, x[i], x[i] ** 2, x[i] ** 3]
+        A[4 * i + 2, 4 * i:4 * i + 4] = [1, x[i + 1], x[i + 1] ** 2, x[i + 1] ** 3]
+        A[4 * i + 3, 4 * i:4 * (i + 1) + 4] = [0, 1, 2 * x[i + 1], 3 * x[i + 1] ** 2, 0, -1, -2 * x[i + 1],
+                                               -3 * x[i + 1] ** 2]
+        A[4 * i + 4, 4 * i:4 * (i + 1) + 4] = [0, 0, 2, 6 * x[i + 1], 0, 0, -2, -6 * x[i + 1]]
+        constraint[4 * i + 1] = y[i]
+        constraint[4 * i + 2] = y[i + 1]
+
+    # function values for function n-1
+    A[4 * (x.size - 2) + 1, 4 * (x.size - 2):] = [1, x[-2], x[-2] ** 2, x[-2] ** 3]
+    A[4 * (x.size - 2) + 2, 4 * (x.size - 2):] = [1, x[-1], x[-1] ** 2, x[-1] ** 3]
+    constraint[4 * (x.size - 2) + 1] = y[y.size - 2]
+    constraint[4 * (x.size - 2) + 2] = y[y.size - 1]
 
 
     # TODO solve linear system for the coefficients of the spline
+    coefficients = np.linalg.solve(A, constraint)
 
     spline = []
     # TODO extract local interpolation coefficients from solution
-
-
+    for i in range(x.size - 1):
+        func_coeff = coefficients[4 * i:4 * i + 4]
+        function = np.poly1d(np.flip(func_coeff))
+        spline.append(function)
     return spline
 
 
