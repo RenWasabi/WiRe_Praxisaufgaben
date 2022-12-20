@@ -109,19 +109,20 @@ def natural_cubic_interpolation(x: np.ndarray, y: np.ndarray) -> list:
     A = np.zeros((4 * x.size - 4, 4 * x.size - 4))  # matrix holding the function
     constraint = np.zeros(4 * x.size - 4)  # vector holding the values to be resolved against
 
-    print(A)
-
     # fill the matrix
     # beginning boundary condition
     A[0,0:4] = [0,0,2,6*x[0]]
     # constraint[0] is already 0
 
-
-
-
     # regular values
     for i in range(x.size - 2):
-        A[4*i+1,4*i:4*i+4] = [4,4,4,4]
+        A[4*i+1,4*i:4*i+4] = [1,x[i],x[i]**2,x[i]**3]
+        A[4 * i + 2, 4 * i:4 * i + 4] = [1, x[i+1], x[i+1] ** 2, x[i+1] ** 3]
+        A[4*i+3,4*i:4*(i+1)+4] = [0,1,2*x[i+1],3*x[i+1]**2, 0,-1,-2*x[i+1],-3*x[i+1]**2]
+        A[4*i+4,4*i:4*(i+1)+4] = [0,0,2,6*x[i+1], 0,0,-2,-6*x[i+1]]
+        constraint[4*i+1] = y[i]
+        constraint[4*i+2] = y[i+1]
+
 
     # function values for function n-1
     A[4*(x.size-2)+1,4*(x.size-2):] = [1,x[-2],x[-2]**2,x[-2]**3]
@@ -132,15 +133,15 @@ def natural_cubic_interpolation(x: np.ndarray, y: np.ndarray) -> list:
     A[4*(x.size-2)+3,4*(x.size-2):] = [0,0,2,6*x[x.size-1]]
     # constraint is already 0
 
-    print(A)
-    print(constraint)
-    print(x)
-
     # TODO solve linear system for the coefficients of the spline
+    coefficients = np.linalg.solve(A,constraint)
 
     spline = []
     # TODO extract local interpolation coefficients from solution
-
+    for i in range(x.size-1):
+        func_coeff = coefficients[4*i:4*i+4]
+        function = np.poly1d(np.flip(func_coeff))
+        spline.append(function)
 
     return spline
 
