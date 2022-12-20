@@ -106,6 +106,35 @@ def natural_cubic_interpolation(x: np.ndarray, y: np.ndarray) -> list:
 
     assert (x.size == y.size)
     # TODO construct linear system with natural boundary conditions
+    A = np.zeros((4 * x.size - 4, 4 * x.size - 4))  # matrix holding the function
+    constraint = np.zeros(4 * x.size - 4)  # vector holding the values to be resolved against
+
+    print(A)
+
+    # fill the matrix
+    # beginning boundary condition
+    A[0,0:4] = [0,0,2,6*x[0]]
+    # constraint[0] is already 0
+
+
+
+
+    # regular values
+    for i in range(x.size - 2):
+        A[4*i+1,4*i:4*i+4] = [4,4,4,4]
+
+    # function values for function n-1
+    A[4*(x.size-2)+1,4*(x.size-2):] = [1,x[-2],x[-2]**2,x[-2]**3]
+    A[4 * (x.size - 2)+2,4*(x.size-2):] = [1,x[-1],x[-1]**2,x[-1]**3]
+    constraint[4*(x.size-2)+1] = y[y.size-2]
+    constraint[4 * (x.size - 2) + 2] = y[y.size-1]
+    # end boundary condition
+    A[4*(x.size-2)+3,4*(x.size-2):] = [0,0,2,6*x[x.size-1]]
+    # constraint is already 0
+
+    print(A)
+    print(constraint)
+    print(x)
 
     # TODO solve linear system for the coefficients of the spline
 
@@ -130,6 +159,8 @@ def periodic_cubic_interpolation(x: np.ndarray, y: np.ndarray) -> list:
 
     assert (x.size == y.size)
     # TODO: construct linear system with periodic boundary conditions
+
+
 
     # TODO solve linear system for the coefficients of the spline
 
