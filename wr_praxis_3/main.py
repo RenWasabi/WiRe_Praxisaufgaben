@@ -226,15 +226,27 @@ np.ndarray, list, np.ndarray):
     """
 
     # TODO: load test data set
-    imgs_test = []
+    imgs_test, test_dim_x, test_dim_y = load_images(path_test)
+    #imgs_test = []
+
 
     # TODO: project test data set into eigenbasis
-    coeffs_test = np.zeros(coeffs_train.shape)
+    coeffs_test = project_faces(pcs, imgs_test, mean_data)
+
 
 
     # TODO: Initialize scores matrix with proper size
-    scores = np.zeros((1, 1))
+    scores = np.zeros((coeffs_train.shape[0],coeffs_test.shape[0]))
     # TODO: Iterate over all images and calculate pairwise correlation
+    for i in range(coeffs_train.shape[0]):
+        for j in range(coeffs_test.shape[0]):
+            a_train = coeffs_train[i,:] / np.linalg.norm(coeffs_train[i,:])
+            b_test = coeffs_test[j,:] / np.linalg.norm(coeffs_test[j,:])
+            arc_scalar = (a_train.T @ b_test) / np.linalg.norm(a_train)*np.linalg.norm(b_test)
+            #print(arc_scalar)
+            #print(np.arccos(arc_scalar))
+            scores[i,j] = np.arccos(arc_scalar)
+
 
 
     return scores, imgs_test, coeffs_test
