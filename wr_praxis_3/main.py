@@ -29,9 +29,12 @@ def power_iteration(M: np.ndarray, epsilon: float = -1.0) -> (np.ndarray, list):
         raise ValueError("Matrix not nxn")
 
     # TODO: set epsilon to default value if not set by user
+    if epsilon == -1.0: # what if user sets epsilon to -1?
+        epsilon = np.finfo(float).eps*10 # 10 times machine precision
 
     # TODO: normalized random vector of proper size to initialize iteration
-    vector = np.zeros(1)
+    #vector = np.zeros(1)
+    vector = np.random.random(M.shape[0])
 
     # Initialize residual list and residual of current eigenvector estimate
     residuals = []
@@ -40,7 +43,12 @@ def power_iteration(M: np.ndarray, epsilon: float = -1.0) -> (np.ndarray, list):
     # Perform power iteration
     while residual > epsilon:
         # TODO: implement power iteration
-        pass
+        old_vector = np.copy(vector) # for calculating the residual
+        vector = np.dot(M, vector) # set v to Av
+        vector = vector / np.linalg.norm(vector) # normalize new v to length 1
+        residual = np.linalg.norm(vector - old_vector) # set residual to distance between old and new vector
+        residuals.append(residual)
+
 
     return vector, residuals
 
@@ -62,15 +70,32 @@ def load_images(path: str, file_ending: str=".png") -> (list, int, int):
     dimension_y: size of images in y direction
     """
 
-    images = []
-
     # TODO read each image in path as numpy.ndarray and append to images
     # Useful functions: lib.list_directory(), matplotlib.image.imread(), numpy.asarray()
 
+    images = []
+
+    # os module not allowed, for testing
+    #print(os.listdir("./")) #works, but doesn't show data directory
+    #print(os.getcwd())
+    # for some reason working directory is wr_praxis_1, not three => specify in test file
+    # load list of image files and sort
+    img_file_list = lib.list_directory(path)
+    img_file_list = sorted(img_file_list) # x_00 to x_09 make up 1 image x
+
+    # convert the list of img files into a list containing each images as np array
+    for img_file in img_file_list:
+        # skip files that do not have the desired file type
+        if not img_file.endswith(file_ending):
+            continue
+        img_tmp = mpl.image.imread(path+"/"+img_file)
+        img_tmp = np.asarray(img_tmp, dtype=np.float64)
+        images.append(img_tmp)
 
     # TODO set dimensions according to first image in images
-    dimension_y = 0
-    dimension_x = 0
+    first_img = images[0]
+    # x: width, y: height
+    dimension_y,dimension_x = first_img.shape
 
     return images, dimension_x, dimension_y
 
@@ -86,9 +111,23 @@ def setup_data_matrix(images: list) -> np.ndarray:
     D: data matrix that contains the flattened images as rows
     """
     # TODO: initialize data matrix with proper size and data type
-    D = np.zeros((0, 0))
+
+    # get flattened dimension of images
+    dim_y, dim_x = images[0].shape
+    img_flat_dim = dim_x*dim_y
+    # initialize data matrix
+    D = np.zeros((len(images), img_flat_dim))
 
     # TODO: add flattened images to data matrix
+
+    # add flattened images in each row of D
+    for img_index in range(len(images)):
+        D[img_index, :] = images[img_index].reshape(img_flat_dim)
+
+    # test
+    #mpl.pyplot.imshow(D[4,:].reshape(98,116), cmap='gray')  # plotte das Bild
+    #mpl.pyplot.show()
+
 
 
     return D
@@ -106,13 +145,15 @@ def calculate_pca(D: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
     svals: singular values associated with principle components
     mean_data: mean that was subtracted from data
     """
-
     # TODO: subtract mean from data / center data at origin
-    mean_data = np.zeros((1, 1))
+    mean_data = D.mean(0)
+    # center data matrix by removing mean from each entry
+    for i in range(D.shape[0]):
+        D[i, :] = D[i,:]-mean_data
 
     # TODO: compute left and right singular vectors and singular values
     # Useful functions: numpy.linalg.svd(..., full_matrices=False)
-    svals, pcs = [np.ones((1, 1))] * 2
+    U, svals, pcs = np.linalg.svd(D, full_matrices=False)
 
     return pcs, svals, mean_data
 
@@ -129,11 +170,15 @@ def accumulated_energy(singular_values: np.ndarray, threshold: float = 0.8) -> i
     Return:
     k: threshold index
     """
-
     # TODO: Normalize singular value magnitudes
-
+    # already sorted: svd returns singular values in descending order by default
+    singular_values = singular_values / singular_values.sum()
+    acc_percent = 0
     k = 0
     # TODO: Determine k that first k singular values make up threshold percent of magnitude
+    while acc_percent < threshold:
+        k += 1
+        acc_percent = singular_values[:k].sum()
 
     return k
 
@@ -151,11 +196,13 @@ def project_faces(pcs: np.ndarray, images: list, mean_data: np.ndarray) -> np.nd
     coefficients: basis function coefficients for input images, each row contains coefficients of one image
     """
 
+    # again, create normalized data_matrix
+    data_matrix = setup_data_matrix(images)-mean_data # mean data will be broadcast to match data_matrix rows
     # TODO: initialize coefficients array with proper size
-    coefficients = np.zeros((1, 1))
+    coefficients = np.zeros((data_matrix.shape[0], pcs.T.shape[1]))
+    coefficients = np.matmul(data_matrix, pcs.T)
 
     # TODO: iterate over images and project each normalized image into principal component basis
-
 
     return coefficients
 
