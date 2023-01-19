@@ -46,6 +46,11 @@ def is_unitary(matrix: np.ndarray) -> bool:
     """
     unitary = True
     # TODO: check that F is unitary, if not return false
+    inverse = np.conjugate(np.copy(matrix).T)
+    n,m = matrix.shape
+    identity=np.eye(n)
+    if not np.allclose(np.matmul(matrix, inverse), identity):
+        unitary = False
 
     return unitary
 
