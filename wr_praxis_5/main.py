@@ -73,6 +73,16 @@ def create_harmonics(n: int = 128) -> (list, list):
     fsigs = []
 
     # TODO: create signals and extract harmonics out of DFT matrix
+    for i in range(n):
+        # create signal
+        signal = np.zeros(n)
+        signal[i] = 1
+        sigs.append(signal)
+        # fourier transform
+        transform = np.matmul(dft_matrix(n),signal)
+        fsigs.append(transform)
+
+
 
     return sigs, fsigs
 
