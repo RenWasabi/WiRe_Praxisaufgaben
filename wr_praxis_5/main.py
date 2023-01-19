@@ -17,14 +17,19 @@ def dft_matrix(n: int) -> np.ndarray:
     - numpy.fft.*
     """
     # TODO: initialize matrix with proper size
-    F = np.zeros((1, 1), dtype='complex128')
+    F = np.ones((n, n), dtype='complex128')
 
     # TODO: create principal term for DFT matrix
+    # principal: first solution of z^n=1 after z=1
+    omega = np.exp(2*np.pi*(1/n)*(0-1j))
 
     # TODO: fill matrix with values
-
+    for i in range(n):
+        for j in range(n):
+            F[i,j] = omega**(i*j)
     # TODO: normalize dft matrix
-
+    normalizer = 1 / n**(1/2)
+    F = normalizer*F
 
     return F
 
