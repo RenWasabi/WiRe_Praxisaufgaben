@@ -102,6 +102,64 @@ def shuffle_bit_reversed_order(data: np.ndarray) -> np.ndarray:
     """
 
     # TODO: implement shuffling by reversing index bits
+
+    for index in range(len(data)):
+        max_binary_len = len(format(len(data), 'b'))+1
+        max_binary_len = format(max_binary_len, 'd')
+        binary_str = format(index, '#0'+max_binary_len+'b')
+        binary_str_reverse = binary_str[:1:-1]
+        reversed = int(binary_str_reverse, 2)
+        if index < reversed:
+            data[index], data[reversed] = data[reversed], data[index]
+
+    """
+    for entry in range(len(data)):
+        j_bits = sys.getsizeof(int())  # number bits / position of MSB+1
+        exponent = 0
+        collected_stages = []
+        max_stage_len = 1  # 2**0
+        stage_index = 0  # where are we in list in current stage
+        for j in range(entry):
+            if exponent == 0:
+                collected_stages.append(2 ** (j_bits))
+                exponent = 1
+                continue
+            # check if new layer needs to be opened
+            elif (len(collected_stages) == max_stage_len):
+                stage_index = 0
+                exponent = exponent + 1
+                max_stage_len = max_stage_len + 2 ** exponent
+                new = 2 ** (j_bits - exponent)
+                print("stage start: ", new)
+                collected_stages.append(new)
+
+                continue
+            else:
+                print("stage index: ", stage_index)
+                print(collected_stages[stage_index])
+                new = 2 ** (j_bits - exponent) + collected_stages[stage_index]
+                stage_index = stage_index + 1
+                collected_stages.append(new)
+                print("in stage:", new)
+
+
+
+        if entry == 0:
+            l = 0
+        else:
+            l = collected_stages[-1]
+
+        j_binary = format(entry, 'b')
+        l_binary = format(l, 'b')
+        print("j: ", entry, ", l: ", l)
+        print("j: ", j_binary, ", l: ", l_binary)
+
+        binary_collected = []
+        for coll in range(len(collected_stages)):
+            binary_collected.append(format(collected_stages[coll], 'b'))
+        print(binary_collected)
+        """
+
     
     return data
 

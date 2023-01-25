@@ -20,4 +20,9 @@ plt.scatter(x,y)
 plt.show()
 """
 
-create_harmonics()
+#create_harmonics()
+
+data = np.asarray([0,1,2,3,4,5,6,7])
+print(data)
+shuffled = shuffle_bit_reversed_order(data)
+print(shuffled)
