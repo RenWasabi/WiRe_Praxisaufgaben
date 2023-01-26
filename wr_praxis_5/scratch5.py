@@ -22,7 +22,8 @@ plt.show()
 
 #create_harmonics()
 
-data = np.asarray([0,1,2,3,4,5,6,7])
+data = np.asarray([1,0,-1,1,2,-1,-2,0])
 print(data)
-shuffled = shuffle_bit_reversed_order(data)
-print(shuffled)
+#shuffled = shuffle_bit_reversed_order(data)
+#print(shuffled)
+print(fft(data))

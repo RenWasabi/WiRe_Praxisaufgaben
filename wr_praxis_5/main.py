@@ -190,11 +190,31 @@ def fft(data: np.ndarray) -> np.ndarray:
         raise ValueError
 
     # TODO: first step of FFT: shuffle data
-
+    fdata = shuffle_bit_reversed_order(fdata)
 
     # TODO: second step, recursively merge transforms
 
+    top_layer = int(np.log2(n)-1) # tree has levels 0 to top_layer
+
+    # for all levels m of the tree
+    for m in range(top_layer+1):
+        root_exp_range = 2**m
+        for k in range(root_exp_range):
+            # compute omega factor for current k
+            omega = np.exp(2*np.pi*(0+1j)*(1/2**(m+1))*k*(-1))
+            # for all values of i,j with i = [k,k+2^(m+1),k+2*2^(m+1),...,n[
+            for i in range(k,n, 2**(m+1)):
+                # perform elementary transformation
+                j = i+2**m
+                p=omega*fdata[j]
+                fdata[j] = fdata[i]-p
+                fdata[i] = fdata[i]+p
+
+
+
+
     # TODO: normalize fft signal
+    fdata = (1/np.sqrt(n))*fdata
 
     return fdata
 
