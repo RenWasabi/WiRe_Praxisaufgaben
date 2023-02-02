@@ -234,7 +234,14 @@ def generate_tone(f: float = 261.626, num_samples: int = 44100) -> np.ndarray:
     x_min = 0.0
     x_max = 1.0
 
-    data = np.zeros(num_samples)
+
+
+    #data = np.sin(f*2*np.pi*(np.arange(x_min, x_max, 1/num_samples)))
+    data = np.sin(f * 2 * np.pi * (np.arange(0, num_samples) / num_samples) - 0.5/num_samples)
+    print(data.size)
+
+
+
 
     # TODO: Generate sine wave with proper frequency
 
