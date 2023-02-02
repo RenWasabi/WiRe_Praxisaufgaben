@@ -115,7 +115,11 @@ def find_root_newton(f: object, df: object, start: np.inexact, n_iters_max: int 
         # TODO: avoid infinite loops and return (root, n_iters_max+1)
 
         if np.abs(old_root- root) < precision:
+            if n_iterations == n_iters_max:
+                n_iterations = n_iters_max+1
             break # close enough
+
+
 
 
     return root, n_iterations
