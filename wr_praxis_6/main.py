@@ -91,6 +91,8 @@ def find_root_newton(f: object, df: object, start: np.inexact, n_iters_max: int 
     root = start
 
     # TODO: chose meaningful convergence criterion eps, e.g 10 * eps
+    precision = np.finfo(root).eps
+    criterion = 10*precision
 
     # Initialize iteration
     fc = f(root)
@@ -98,12 +100,23 @@ def find_root_newton(f: object, df: object, start: np.inexact, n_iters_max: int 
     n_iterations = 0
 
     # TODO: loop until convergence criterion eps is met
+    for n_iterations in range(n_iters_max+1):
 
         # TODO: return root and n_iters_max+1 if abs(derivative) is below f_eps or abs(root) is above 1e5 (to avoid divergence)
+        if np.abs(dfc) < precision or np.abs(root) > 1e5:
+            return(root, n_iters_max+1)
 
         # TODO: update root value and function/dfunction values
+        old_root = root
+        root = root - fc/dfc
+        fc = f(root)
+        dfc = df(root)
 
         # TODO: avoid infinite loops and return (root, n_iters_max+1)
+
+        if np.abs(old_root- root) < precision:
+            break # close enough
+
 
     return root, n_iterations
 
