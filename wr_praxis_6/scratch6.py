@@ -11,7 +11,7 @@ from main import find_root_bisection, find_root_newton, generate_newton_fractal,
 
 
 #find_root_bisection(lambda x: x ** 2 - 2, np.float64(-1.0), np.float64(2.0))
-
+"""
 size = 100 # size of the image
 max_iterations = 200
 
@@ -32,3 +32,8 @@ for c, el in enumerate(fractal_functions[:]):
     plt.imsave('data/fractal_' + name + '.png', img)
     #self.assertTrue(np.allclose(self.data["fr_" + str(c)], img))
     # np.savez("data"+name, fr=img)
+"""
+nc = 32 # number of elements per layer
+nz = 12 # number of layers
+v, f, c = generate_cylinder(16, 8)
+surface_area(v,f)
