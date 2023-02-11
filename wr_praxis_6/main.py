@@ -243,20 +243,33 @@ def gradient_descent_step(v: np.ndarray, f: np.ndarray, c: np.ndarray, epsilon: 
 
 
     # TODO: calculate gradient and area before changing the surface
-    gradient = np.zeros_like(v)
-    area = 0.0
+    #gradient = np.zeros_like(v)
+    #area = 0.0
+    gradient = surface_area_gradient(v,f)
+    area = surface_area(v,f)
 
     # TODO: calculate indices of vertices whose position can be changed
+    # instead: set gradient to zero for fixed points
+    for i in range(c.shape[0]):
+        gradient[c[i]] = np.zeros(3)
 
     # TODO: find suitable step size so that area can be decreased, don't change v yet
     step = ste
 
     # TODO: now update vertex positions in v
+    transformed_v = np.copy(v) + step*gradient
+    new_area = surface_area(transformed_v,f)
+    while area < new_area:
+        step = step/2
+        transformed_v = np.copy(v) + step*gradient
+        new_area = surface_area(transformed_v, f)
 
     # TODO: Check if new area differs only epsilon from old area
+    if np.abs(area-new_area) <= epsilon:
+        return True, new_area,transformed_v,gradient
     # Return (True, area, v, gradient) to show that we converged and otherwise (False, area, v, gradient)
 
-    return False, area, v, gradient
+    return False, new_area , transformed_v, gradient
 
 
 if __name__ == '__main__':
