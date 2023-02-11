@@ -185,20 +185,10 @@ def surface_area(v: np.ndarray, f: np.ndarray) -> float:
 
     # calculates area of a single triangle
     triangle_area = lambda x_i, x_j, x_k : np.linalg.norm(np.cross(x_i-x_j,x_k-x_j))/2
-    test_x_i = np.asarray([0,0])
-    test_x_j = np.asarray([2, 0])
-    test_x_k = np.asarray([0, 2])
-    print(triangle_area(test_x_i,test_x_j,test_x_k))
-
     number_faces  = f.shape[0]
     print(number_faces)
     for i in range(number_faces):
         area += triangle_area(v[f[i,0]],v[f[i,1]],v[f[i,2]])
-
-    print(area)
-
-
-
     return area
 
 
@@ -218,6 +208,18 @@ def surface_area_gradient(v: np.ndarray, f: np.ndarray) -> np.ndarray:
     gradient = np.zeros(v.shape)
 
     # TODO: iterate over all triangles and sum up the vertices gradients
+    for i in range(f.shape[0]):
+        a = v[f[i,2]]-v[f[i,1]]
+        b = v[f[i, 2]] - v[f[i, 0]]
+        c = v[f[i, 1]] - v[f[i, 0]]
+        #  compute vector normal to triangle face
+        n = np.cross(c,b)
+        n = n/np.linalg.norm(n)
+        gradient[f[i,0]] += np.cross(a,n)
+        gradient[f[i, 1]] -= np.cross(b,n)
+        gradient[f[i, 2]] += np.cross(c,n)
+
+
 
     return gradient
 

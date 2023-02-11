@@ -37,3 +37,4 @@ nc = 32 # number of elements per layer
 nz = 12 # number of layers
 v, f, c = generate_cylinder(16, 8)
 surface_area(v,f)
+surface_area_gradient(v,f)
